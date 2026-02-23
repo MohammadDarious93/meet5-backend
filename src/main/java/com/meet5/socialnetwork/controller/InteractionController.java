@@ -19,6 +19,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/user")
+/**
+ * Handles user-to-user interactions such as visits, likes, and visitor reads.
+ */
 public class InteractionController {
 
     private final InteractionService interactionService;
@@ -29,17 +32,20 @@ public class InteractionController {
 
     @PostMapping("/visit")
     @ResponseStatus(HttpStatus.CREATED)
+    /** Records a profile visit after validation and fraud checks. */
     public InteractionResponse visit(@Valid @RequestBody VisitRequest request) {
         return interactionService.visit(request.visitorId(), request.visitedId());
     }
 
     @PostMapping("/like")
     @ResponseStatus(HttpStatus.CREATED)
+    /** Records a profile like while enforcing duplicate and self-like rules. */
     public InteractionResponse like(@Valid @RequestBody LikeRequest request) {
         return interactionService.like(request.likerId(), request.likedId());
     }
 
     @GetMapping("/visitors")
+    /** Returns visitors for a user in descending recency order with pagination. */
     public List<ProfileVisitorView> visitors(
             @RequestParam long userId,
             @RequestParam(defaultValue = "100") int limit,

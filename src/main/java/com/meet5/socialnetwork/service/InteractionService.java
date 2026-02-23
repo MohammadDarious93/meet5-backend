@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.Set;
 
 @Service
+/**
+ * Applies interaction business rules and persists visits/likes atomically.
+ */
 public class InteractionService {
 
     private final InteractionRepository interactionRepository;
@@ -43,6 +46,7 @@ public class InteractionService {
     }
 
     @Transactional
+    /** Records a visit and triggers fraud re-evaluation for the acting user. */
     public InteractionResponse visit(long visitorId, long visitedId) {
         if (visitorId == visitedId && !fraudProperties.enableSelfVisit()) {
             throw new BadRequestException("users cannot visit themselves");
@@ -61,6 +65,7 @@ public class InteractionService {
     }
 
     @Transactional
+    /** Records a like while enforcing self-like and duplicate-like constraints. */
     public InteractionResponse like(long likerId, long likedId) {
         if (likerId == likedId) {
             throw new BadRequestException("users cannot like themselves");
@@ -82,6 +87,7 @@ public class InteractionService {
     }
 
     @Transactional(readOnly = true)
+    /** Reads a paginated visitor list for a profile after input validation. */
     public List<ProfileVisitorView> getVisitors(long userId, int limit, int offset) {
         if (limit < 1 || limit > 500) {
             throw new BadRequestException("limit must be between 1 and 500");

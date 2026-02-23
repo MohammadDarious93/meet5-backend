@@ -23,6 +23,9 @@ import java.util.Optional;
 import java.util.Set;
 
 @Repository
+/**
+ * JDBC implementation for user persistence, including batch ingestion and fraud flagging.
+ */
 public class JdbcUserRepository implements UserRepository {
 
     private static final TypeReference<Map<String, String>> ATTR_TYPE = new TypeReference<>() {
@@ -90,6 +93,7 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
+    /** Inserts users in chunks to reduce round trips and improve throughput. */
     public int batchInsert(List<UserProfile> users, int batchSize) {
         String sql = "INSERT INTO users(name, age, created_at, is_fraud, attributes_json) VALUES(?, ?, ?, ?, ?)";
         int inserted = 0;

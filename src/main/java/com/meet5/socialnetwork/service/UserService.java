@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+/**
+ * Coordinates user lifecycle operations and maps domain objects to API DTOs.
+ */
 public class UserService {
 
     private static final int BATCH_SIZE = 500;
@@ -24,17 +27,20 @@ public class UserService {
     }
 
     @Transactional
+    /** Creates and persists a validated user profile. */
     public UserResponse create(CreateUserRequest request) {
         UserProfile saved = userRepository.create(UserProfile.newUser(request.name(), request.age(), request.attributes()));
         return toResponse(saved);
     }
 
     @Transactional(readOnly = true)
+    /** Loads a user or fails with a not-found business exception. */
     public UserProfile getOrThrow(long userId) {
         return userRepository.findById(userId).orElseThrow(() -> new NotFoundException("user not found: " + userId));
     }
 
     @Transactional
+    /** Performs high-throughput user insertion using fixed-size JDBC batches. */
     public BulkInsertResult bulkInsert(List<CreateUserRequest> requests) {
         if (requests == null || requests.isEmpty()) {
             throw new BadRequestException("users payload cannot be empty");

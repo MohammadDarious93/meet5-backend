@@ -10,6 +10,9 @@ import java.time.Clock;
 import java.time.Instant;
 
 @Service
+/**
+ * Evaluates fraud risk from interaction history inside the configured signup window.
+ */
 public class FraudDetectionService {
 
     private final InteractionRepository interactionRepository;
@@ -29,6 +32,9 @@ public class FraudDetectionService {
         this.clock = clock;
     }
 
+    /**
+     * Flags a user when both distinct visits and likes reach threshold in the first N minutes.
+     */
     public void evaluateAfterInteraction(UserProfile actor) {
         if (actor.isFraud()) {
             return;

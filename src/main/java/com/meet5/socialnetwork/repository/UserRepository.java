@@ -7,6 +7,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Persistence contract for user lifecycle, identity lookup, and fraud state updates.
+ */
 public interface UserRepository {
     UserProfile create(UserProfile userProfile);
 
@@ -14,6 +17,7 @@ public interface UserRepository {
 
     int batchInsert(List<UserProfile> users, int batchSize);
 
+    /** Marks a user as fraud at a specific evaluation timestamp. */
     void markFraud(long userId, Instant flaggedAt);
 
     Collection<Long> existingIds(Collection<Long> ids);

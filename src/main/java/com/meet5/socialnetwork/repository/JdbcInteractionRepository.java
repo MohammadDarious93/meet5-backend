@@ -10,6 +10,9 @@ import java.time.Instant;
 import java.util.List;
 
 @Repository
+/**
+ * JDBC implementation for interaction persistence with SQL tuned for timeline queries.
+ */
 public class JdbcInteractionRepository implements InteractionRepository {
 
     private final JdbcTemplate jdbcTemplate;
@@ -25,6 +28,7 @@ public class JdbcInteractionRepository implements InteractionRepository {
     }
 
     @Override
+    /** Uses DB unique constraints; duplicate likes are translated into a false result. */
     public boolean insertLikeIfNotExists(long likerId, long likedId, Instant createdAt) {
         String sql = "INSERT INTO profile_likes(liker_user_id, liked_user_id, created_at) VALUES (?, ?, ?)";
         try {
@@ -36,6 +40,7 @@ public class JdbcInteractionRepository implements InteractionRepository {
     }
 
     @Override
+    /** Retrieves recent visitors with pagination-friendly ordering. */
     public List<ProfileVisitorView> findVisitorsByUserId(long userId, int limit, int offset) {
         String sql = """
                 SELECT pv.visitor_user_id, u.name, u.age, pv.created_at
